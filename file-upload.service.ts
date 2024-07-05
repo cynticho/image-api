@@ -11,6 +11,7 @@ export class FileUploadService {
 
   constructor(private http: HttpClient) { }
 
+  // poster une photo
   upload(file: File, image: Image): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
@@ -28,22 +29,38 @@ export class FileUploadService {
     return this.http.patch<Image>(`${this.baseUrl}/${id}/like`, {});
   }
 
+  // recuperer une image
   getImage(id: number): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/${id}`, { responseType: 'blob' });
   }
 
+  //suprimmer une photo
   deleteImage(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  getAllBYid(id: number): Observable<any[]> {
-    return this.http.get<any[]>(this.baseUrl);
+  // photos non suprimmées d'une categorie
+  getAllByPhotographeId(id: number): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl+"/photographe"+id);
   }
 
+  // photos non suprimmées d'un photographe
+  getAllByCategorieId(id: number): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl+"/categorie"+id);
+  }
+
+  // photos non suprimmées
   getFiles(): Observable<any[]> {
     return this.http.get<any[]>(this.baseUrl);
   }
 
+  //photos suprimmées
+  getFilesTrashed(): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl+"?isDeleted=true");
+  }
+
+
+  //nombre de photo
   count(): Observable<number> {
     return this.http.get<number>(this.baseUrl+"/count");
   }
