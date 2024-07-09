@@ -19,72 +19,75 @@ export class FileUploadService {
     formData.append('description', image.description);
     formData.append('category_id', image.category_id);
     formData.append('price',image.price)
-    formData.append('phototographer_id', image.phototographer_id);
+    formData.append('photographer_id', image.photographer_id);
     console.log("formdata",formData)
 
     return this.http.post(this.baseUrl, formData);
   }
 
-  incrementLikes(id: number): Observable<Image> {
-    return this.http.patch<Image>(`${this.baseUrl}/${id}/like`, {});
-  }
+  // incrementLikes(id: number): Observable<Image> {
+    // return this.http.patch<Image>(`${this.baseUrl}/${id}/like`, {});
+  // }
 
-  // recuperer une image
+  // recuperer une image par son id
   getImage(id: number): Observable<Blob> {
     return this.http.get(`${this.baseUrl}/${id}`, { responseType: 'blob' });
   }
 
-  //suprimmer une photo
+  //suprimmer une photo par son id
   deleteImage(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  // photos non suprimmées d'une categorie
+  // recuperer les photos non suprimmées d'une categorie
   getAllByPhotographeId(id: number): Observable<any[]> {
-    return this.http.get<any[]>(this.baseUrl+"/photographe"+id);
+    return this.http.get<any[]>(this.baseUrl+"/photographe/"+id);
   }
 
-  // photos non suprimmées d'un photographe
+  // recuperer les photos non suprimmées d'une categorie
+  getAllByPhotographeIdTrashed(id: number): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl+"/photographe/"+id+"?isDeleted=true");
+  }
+
+  // recuperer les photos non suprimmées d'un photographe
   getAllByCategorieId(id: number): Observable<any[]> {
-    return this.http.get<any[]>(this.baseUrl+"/categorie"+id);
+    return this.http.get<any[]>(this.baseUrl+"/categorie/"+id);
   }
 
-  // photos non suprimmées
+  // recuperer les photos non suprimmées d'un photographe
+  getAllByCategorieIdTrashed(id: number): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl+"/categorie/"+id+"?isDeleted=true");
+  }
+
+  // recuperer les photos non suprimmées
   getFiles(): Observable<any[]> {
     return this.http.get<any[]>(this.baseUrl);
   }
 
-  //photos suprimmées
+  // recuperer les photos suprimmées
   getFilesTrashed(): Observable<any[]> {
     return this.http.get<any[]>(this.baseUrl+"?isDeleted=true");
   }
 
+  //inrementer les likeS d'une photo
+  like(id: number): Observable<any> {
+    return this.http.patch(this.baseUrl+"/"+id+"/like",{});
+  }
 
-  //nombre de photo
+   //decrementer les likeS d'une photo
+   unlike(id: number): Observable<any> {
+    return this.http.patch(this.baseUrl+"/"+id+"/unlike",{});
+  }
+
+  // restorer une photo suprimmée
+  restore(id: number): Observable<any[]> {
+    return this.http.get<any[]>(this.baseUrl+"/"+id+"/restore");
+  }
+
+  // compter le nombre de photo
   count(): Observable<number> {
     return this.http.get<number>(this.baseUrl+"/count");
   }
 
-  rechercherImages(title?: string, description?: string, likes?: number, photographerId?: number, categoryId?: number): Observable<any> {
 
-      let params = new HttpParams();
-      if (title) {
-        params = params.append('title', title);
-      }
-      if (description) {
-        params = params.append('description', description);
-      }
-      if (likes) {
-        params = params.append('likes', likes);
-      }
-      if (photographerId) {
-        params = params.append('likes', photographerId);
-      }
-      if (categoryId) {
-        params = params.append('likes', categoryId);
-      }
-
-
-    return this.http.get(`${this.baseUrl}/search`, { params: params });
-  }
 }
