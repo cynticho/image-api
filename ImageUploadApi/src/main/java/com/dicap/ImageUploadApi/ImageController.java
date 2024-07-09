@@ -28,9 +28,9 @@ public class ImageController {
                                                    @RequestParam("description") String description,
                                                    @RequestParam("category_id") Long category_id,
                                                    @RequestParam("price") double price,
-                                                   @RequestParam("phototographer_id") Long phototographer_id,
+                                                   @RequestParam("photographer_id") Long photographer_id,
                                                    @RequestParam("title") String title) throws IOException {
-        ImageEntity image = imageSevice.saveImage(file,title,description,price,category_id,phototographer_id);
+        ImageEntity image = imageSevice.saveImage(file,title,description,price,category_id,photographer_id);
         return ResponseEntity.ok(image);
 
     }
@@ -42,14 +42,36 @@ public class ImageController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/all/id")
-    public List<ImageEntity> findAllById(@PathVariable Long id){
-        return imageSevice.getAllById(id);
+    @GetMapping("/photographe/{id}")
+    public List<ImageEntity> getByPhotographe(@PathVariable Long id, @RequestParam(value =
+            "isDeleted", required = false, defaultValue = "false") boolean
+            isDeleted){
+        return imageSevice.getAllByPhotographeId(id,isDeleted);
     }
+
+    @GetMapping("/categorie/{id}")
+    public List<ImageEntity> getByCategorie(@PathVariable Long id,@RequestParam(value =
+            "isDeleted", required = false, defaultValue = "false") boolean
+            isDeleted){
+        return imageSevice.getAllByCategorieId(id, isDeleted);
+    }
+
 
     @PatchMapping("/{id}/like")
     public ResponseEntity<ImageEntity> incrementLikes(@PathVariable Long id) {
         ImageEntity updatedImage = imageSevice.incrementLikes(id);
+        return ResponseEntity.ok(updatedImage);
+    }
+
+    @PatchMapping("/{id}/unlike")
+    public ResponseEntity<ImageEntity> decrementLikes(@PathVariable Long id) {
+        ImageEntity updatedImage = imageSevice.decrementLikes(id);
+        return ResponseEntity.ok(updatedImage);
+    }
+
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<ImageEntity> restore(@PathVariable Long id) {
+        ImageEntity updatedImage = imageSevice.restore(id);
         return ResponseEntity.ok(updatedImage);
     }
 
@@ -60,8 +82,10 @@ public class ImageController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ImageEntity>> getAllImages() {
-        List<ImageEntity> images = imageSevice.getAllImages();
+    public ResponseEntity<List<ImageEntity>> getAllImages(@RequestParam(value =
+            "isDeleted", required = false, defaultValue = "false") boolean
+            isDeleted) {
+        List<ImageEntity> images = imageSevice.findAllFilter(isDeleted);
         return ResponseEntity.ok(images);
     }
 

@@ -1,21 +1,29 @@
 package com.dicap.ImageUploadApi;
 
 import jakarta.persistence.*;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "photos")
-@SQLDelete(sql = "UPDATE photos SET deleted = true WHERE id=?")
-@Where(clause = "deleted=false")
+@Table(name = "photo")
+@SQLDelete(sql = "UPDATE photo SET deleted = true WHERE id=?")
+
+@FilterDef(
+        name = "deleteImageFilter",
+        parameters = @ParamDef(name = "isDeleted", type = Boolean.class)
+)
+@Filter(
+        name = "deleteImageFilter",
+        condition = "deleted = :isDeleted"
+)
 public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,8 +39,8 @@ public class ImageEntity {
     @Column(nullable = false)
     private byte[] url;
     @Column(nullable = false)
-    private Long photographe_id=1L;
+    private Long photographeId=1L;
     @Column(nullable = false)
-    private Long categorie_id=1L;
-    private boolean deleted = Boolean.FALSE;
+    private Long categorieId=1L;
+    private Boolean deleted = Boolean.FALSE;
 }
